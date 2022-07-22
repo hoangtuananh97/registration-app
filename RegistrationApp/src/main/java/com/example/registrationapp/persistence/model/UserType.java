@@ -31,7 +31,8 @@ public class UserType {
     @Column(name = "is_limit_salary")
     private boolean isLimitSalary = true;
 
-    @OneToMany(mappedBy = "userType", targetEntity = User.class, orphanRemoval = true, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userType", targetEntity = User.class, orphanRemoval = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private Collection<User> users;
 
     public UserType(String typeClassify, long fromSalary, long toSalary) {

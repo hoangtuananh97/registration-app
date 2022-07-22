@@ -42,7 +42,8 @@ public class SecSecurityConfig extends WebSecurityConfigurerAdapter {
                 "api/v1/user/registration*",
                 "api/v1/registration/confirm*",
                 "api/v1/expiredAccount*",
-                "api/v1/registration*"
+                "api/v1/registration*",
+                "api/v1/users*"
             ).permitAll();
 
     }

@@ -27,8 +27,9 @@ public class User {
     @Column(name = "salary")
     private long salary;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_type_id", nullable = false)
+    @JsonIgnore
     private UserType userType;
 
     @Getter(AccessLevel.NONE)

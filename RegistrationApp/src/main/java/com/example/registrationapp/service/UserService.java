@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -97,6 +99,26 @@ public class UserService implements IUserService{
         user.setEnabled(true);
         userRepository.save(user);
         return TOKEN_VALID;
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public Optional<User> getUserById(long id) {
+        return userRepository.findById(id);
+    }
+
+    @Override
+    public User getUserByUsernameAndNotId(String username, long id) {
+        return userRepository.findByUsernameAndNotId(username, id);
+    }
+
+    @Override
+    public User updateUser(User user) {
+        return userRepository.save(user);
     }
 
     public boolean usernameExists(String username){

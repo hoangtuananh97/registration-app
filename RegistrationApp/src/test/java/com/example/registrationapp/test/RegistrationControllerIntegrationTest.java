@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -83,7 +82,7 @@ public class RegistrationControllerIntegrationTest {
         ResultActions resultActions = this.mockMvc.perform(post("/api/v1/registration/confirm?token=" + token));
         resultActions.andExpect(status().is2xxSuccessful())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", containsString("success")));;
+                .andExpect(jsonPath("$.message", containsString("Successfully")));;
     }
 
 

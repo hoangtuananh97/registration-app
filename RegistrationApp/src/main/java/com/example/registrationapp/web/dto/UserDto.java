@@ -20,11 +20,12 @@ public class UserDto {
     private String username;
 
     @ValidPassword
-    @NotNull
     private String password;
 
     @NotNull
     @Range(min=0, message = "{Size.userDto.salary}")
     private Long salary;
 
+    private String userType;
+    private long id;
 }
