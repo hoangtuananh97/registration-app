@@ -103,12 +103,12 @@ public class UserService implements IUserService{
 
     @Override
     public List<User> getUsers() {
-        return userRepository.findAll();
+        return userRepository.findUsersByEnabledIsTrue();
     }
 
     @Override
-    public Optional<User> getUserById(long id) {
-        return userRepository.findById(id);
+    public Optional<User> getUserByEnabledIsTrueAndId(long id) {
+        return Optional.ofNullable(userRepository.findUserByEnabledIsTrueAndId(id));
     }
 
     @Override

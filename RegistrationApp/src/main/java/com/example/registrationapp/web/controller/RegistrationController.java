@@ -3,9 +3,11 @@ package com.example.registrationapp.web.controller;
 import com.example.registrationapp.listenevent.RegistrationEvent;
 import com.example.registrationapp.persistence.model.User;
 import com.example.registrationapp.persistence.model.UserType;
+import com.example.registrationapp.persistence.model.VerificationToken;
 import com.example.registrationapp.plugin.SendEmail;
 import com.example.registrationapp.service.IUserService;
 import com.example.registrationapp.service.IUserTypeService;
+import com.example.registrationapp.service.IVerificationTokenService;
 import com.example.registrationapp.web.dto.UserDto;
 import com.example.registrationapp.web.exception.SalaryInvalidateException;
 import com.example.registrationapp.web.exception.UserAlreadyExistException;
@@ -34,6 +36,9 @@ public class RegistrationController {
     @Autowired
     private IUserTypeService userTypeService;
 
+    @Autowired
+    private IVerificationTokenService verificationTokenService;
+
     public RegistrationController() {
         super();
     }
@@ -50,7 +55,7 @@ public class RegistrationController {
         SendEmail sendEmail = new SendEmail();
         String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
         RegistrationEvent event = new RegistrationEvent(appUrl, request.getLocale(),user);
-//        sendEmail.sendConfirm(event);
+        sendEmail.sendConfirm(event, "Registration Confirmation");
         userDto.setUserType(user.getUserType().getTypeClassify());
         userDto.setUsername(user.getUsername());
         userDto.setSalary(user.getSalary());
@@ -67,13 +72,25 @@ public class RegistrationController {
             @ApiResponse(code = 500, message = "Error Server - Error Error Server")
     })
     @PostMapping("/registration/confirm")
-    public  GenericResponse<String> confirmRegistrationAccount(@RequestParam("token") String token){
+    public  GenericResponse<String> confirmRegistrationAccount(@RequestParam("token") String token, final HttpServletRequest request){
         String result = userService.validateVerificationToken(token);
         if (result.equals("valid")){
+            VerificationToken verificationToken = verificationTokenService.findByToken(token);
+            SendEmail sendEmail = new SendEmail();
+            String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+            RegistrationEvent event = new RegistrationEvent(appUrl, request.getLocale(), verificationToken.getUser());
+            sendEmail.sendConfirmSuccess(event, "Confirmation successfully");
             return new GenericResponse<>("Successfully");
         }
         return new GenericResponse<>("Failure");
     }
+    @ApiOperation(value = "List Users", notes = "Returns list user")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully"),
+            @ApiResponse(code = 400, message = "Bad request - Token error"),
+            @ApiResponse(code = 403, message = "Permission Denied - Token error"),
+            @ApiResponse(code = 500, message = "Error Server - Error Error Server")
+    })
     @GetMapping("/users")
     public GenericResponse<UserDto> getUsers(){
         List<User> users = userService.getUsers();
@@ -89,9 +106,16 @@ public class RegistrationController {
         }
         return new GenericResponse<>("Successfully", userDtos, null);
     }
+    @ApiOperation(value = "Get detail Users", notes = "Returns detail user")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully"),
+            @ApiResponse(code = 400, message = "Bad request - Token error"),
+            @ApiResponse(code = 403, message = "Permission Denied - Token error"),
+            @ApiResponse(code = 500, message = "Error Server - Error Error Server")
+    })
     @GetMapping("/users/{id}")
     public GenericResponse<UserDto> getUsers(@PathVariable long id){
-        User user = userService.getUserById(id).orElseThrow(UserNotFoundException::new);
+        User user = userService.getUserByEnabledIsTrueAndId(id).orElseThrow(UserNotFoundException::new);
         UserDto userDto = new UserDto();
         userDto.setUserType(user.getUserType().getTypeClassify());
         userDto.setUsername(user.getUsername());
@@ -100,9 +124,16 @@ public class RegistrationController {
         userDto.setId(user.getId());
         return new GenericResponse<>("Successfully", userDto, null);
     }
+    @ApiOperation(value = "Update detail Users", notes = "Returns detail user")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully"),
+            @ApiResponse(code = 400, message = "Bad request - Token error"),
+            @ApiResponse(code = 403, message = "Permission Denied - Token error"),
+            @ApiResponse(code = 500, message = "Error Server - Error Error Server")
+    })
     @PutMapping("/users/{id}")
     public GenericResponse<UserDto> updateUser(@PathVariable long id, @RequestBody UserDto userDto){
-        User updateUser = userService.getUserById(id).orElseThrow(UserNotFoundException::new);
+        User updateUser = userService.getUserByEnabledIsTrueAndId(id).orElseThrow(UserNotFoundException::new);
         long salary = userDto.getSalary();
         String username = userDto.getUsername();
 

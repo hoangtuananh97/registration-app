@@ -15,7 +15,7 @@ public interface IUserService {
     User getUser(String verificationToken);
     String validateVerificationToken(String token);
     List<User> getUsers();
-    Optional<User> getUserById(long id);
+    Optional<User> getUserByEnabledIsTrueAndId(long id);
     User getUserByUsernameAndNotId(String username, long id);
     User updateUser(User user);
 }

@@ -141,6 +141,6 @@ public class RegistrationControllerIntegrationTest {
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.error", is("InvaliduserDto")));
         }
-
     }
+
 }
